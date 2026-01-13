@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+   <html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <!--=============== REMIXICONS ===============-->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+
+      <!--=============== CSS ===============-->
+      <link rel="stylesheet" href="assets/css/styles.css">
+
+      <title>Responsive navbar with search and login - Bedimcode</title>
+   </head>
+   <body>
+      <!--==================== HEADER ====================-->
+      <header class="header" id="header"></header>
+
+      ==================== SEARCH ====================
+      <div class="search" id="search">
+         <form action="" class="search__form">
+            <i class="ri-search-line search__icon"></i>
+            <input type="search" placeholder="What are you looking for?" class="search__input">
+         </form>
+
+         <i class="ri-close-line search__close" id="search-close"></i>
+      </div>
+
+      <!--==================== LOGIN ====================-->
+      <div class="login" id="login">
+         <form action="" class="login__form" id="login__formId">
+            <h2 class="login__title">Log In</h2>
+
+            <div id="login-error" style="color:red; margin-bottom:10px;"></div> <!-- error messages appear here -->
+            
+            <div class="login__group">
+               <div>
+                  <label for="email" class="login__label">Email</label>
+                  <input type="email" placeholder="abcd@nwmissouri.edu" id="email" class="login__input">
+               </div>
+               
+               <div>
+                  <label for="number919" class="login__label">#919 Number</label>
+                  <input type="number" placeholder="#919" id="number919" class="login__input">
+               </div>
+
+                 <!-- Role Dropdown -->
+               <div>
+                  <label for="role" class="login__label">Role</label>
+                  <select id="role" class="login__input">
+                     <option value="" disabled selected class = "login_select">Select Role</option>
+                     <option value="TECHNICIAN" class = "login_select">Technician</option>
+                     <option value="ADMIN" class = "login_select">Admin</option>
+                  </select>
+               </div>
+
+            </div>
+
+            <div>
+               <button type="submit" class="login__button">Log In</button>
+            </div>
+         </form>
+
+         <i class="ri-close-line login__close" id="login-close"></i>
+      </div>
+
+      <!--==================== MAIN ====================-->
+      <main class="main">
+         <img src="assets/img/NWMSU-bg-img.jpg" alt="image" class="main__bg">
+      </main>
+      
+      <!--=============== MAIN JS ===============-->
+      <script src="assets/js/main.js"></script>
+      <script> 
+         (async function checkSession() {
+         const fetchedUser = JSON.parse(localStorage.getItem("user") || "null");
+         const email =  fetchedUser?.email;
+         const number919 = fetchedUser?.number919;
+         const role = fetchedUser?.role;
+
+         if (fetchedUser) {
+            try {
+               const response = await fetch("http://localhost:8080/api/user/validate", {
+               method: "POST",
+               headers: { "Content-Type": "application/json" },
+               body: JSON.stringify({ email, number919, role }),
+            });
+
+            if (response.status === 200) {
+               const res = await response.json();
+
+               localStorage.setItem("loggedIn", "true");
+               localStorage.setItem("user", JSON.stringify(res.data));ss
+
+               document.getElementById("login").classList.remove("show-login");
+
+               window.location.href = "assets/html/home.html";
+            } else {
+               throw new Error("Unexpected error occurred");
+            }
+            } catch (err) {
+               console.warn("Session invalid. Clearing localStorage...");
+               localStorage.removeItem("loggedIn");
+               localStorage.removeItem("user");
+               window.location.href = "../../index.html";
+            }
+         }
+         })();
+      </script>
+      <script>loadHeader()</script>
+   </body>
+</html>
